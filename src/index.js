@@ -30,7 +30,7 @@ function getCreatureDescription(card) {
 
 // Основа для утки.
 class Duck extends Card {
-    constructor(name='Мирная утка', maxPower = 2, image) {
+    constructor(name = 'Мирная утка', maxPower = 2, image) {
         super(name, maxPower, image);
     }
 
@@ -46,7 +46,7 @@ class Duck extends Card {
 
 // Основа для собаки.
 class Dog extends Card {
-    constructor(name='Пес-бандит', maxPower = 3, image) {
+    constructor(name = 'Пес-бандит', maxPower = 3, image) {
         super(name, maxPower, image);
     }
 }
@@ -85,6 +85,25 @@ class Trasher extends Dog {
             'Получает на 1 меньше урона',
             ...super.getDescriptions()
         ];
+    }
+}
+
+class Gatling extends Creature {
+    constructor() {
+        super('Гатлинг', 6);
+    }
+
+    attack(gameContext, continuation) {
+        const taskQueue = new TaskQueue();
+        const { oppositePlayer } = gameContext;
+
+        for (const card of gameContext.oppositePlayer.table) {
+            if (card) {
+                taskQueue.push(onDone => this.dealDamageToCreature(2, card, gameContext, onDone));
+            }
+        }
+
+        taskQueue.continueWith(continuation);
     }
 }
 
@@ -146,10 +165,12 @@ const seriffStartDeck = [
     new Duck(),
     new Duck(),
     new Duck(),
+    new Gatling(),
 ];
 const banditStartDeck = [
-    new Lad(),
-    new Lad(),
+    new Trasher(),
+    new Dog(),
+    new Dog(),
 ];
 
 
